@@ -1,0 +1,51 @@
+---
+title: "BOM1 TASK 1: ESTIMATING POPULATION SIZE"
+autho: "Amy Nguyen"
+output: html_notebook
+---
+<center>
+#Estimating Population Size
+##Amy Nguyen
+##C997 - R for Data Analysts
+##November 2020
+</center>
+
+
+###Introduciton
+The United States collects and analyzes demographic data from the U.S. population. The U.S. Census Bureau provides annual estimates of the population size of each U.S. state and region. Many important decisions are made using the estimated population dynamics, including the investments in new infrastructure, such as schools and hospitals; establishing new job training centers; opening or closing schools and senior centers; and adjusting the emergency services to the size and characteristics of the demographics of metropolitan and other areas, states, or the country as a whole. The census data and estimates are publicly available on the U.S. census website. Data analysts use a variety of tools to create models for predictions, including models of population dynamics of a state of a region. For this project, you will use R to create a linear regression model of the population dynamics of your state and predict the size of its population.
+
+###Importing the Data
+For this project the data can be found from the U.S. Census Bureau at WWW.census.org. For our purposes I've decided to use the "City and Town Population Totals: 2010-2019" for Texas. This data can be found at https://www.census.gov/data/datasets/time-series/demo/popest/2010s-total-cities-and-towns.html#ds. My first step of this project was to import the data into a dataframe in R.
+
+```{r}
+population <- read.csv("https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/cities/totals/sub-est2019_48.csv", stringsAsFactors = FALSE)
+population
+```
+
+
+### Cleaning the Data
+For this project a linear regression will be created using the total population estimate for each year from 2010 to 2019. Therefore, in order to simplify and imporve the readibility of the data we will be removing any unnecessary columns and/or rows. 
+
+```{r}
+df <- subset(population, select = -c(SUMLEV, STATE, COUNTY, PLACE, COUSUB, CONCIT, PRIMGEO_FLAG, FUNCSTAT))
+df[1,1] = "State Total"
+df
+
+```
+
+The cleaned data has been put into a new data frame named "df". Specifically, a subset of the original data without the columns SUMLEV, STATE, COUNTY, PLACE, COUSUB, CONCIT, PRIMGEO_FLAG, and FUNCSTAT has been put into a dataframe named "df".
+
+In addition to these changes the value for the first row under column "NAME" has been changed from "Texas" to "State Total".
+
+
+
+### Part C
+Create an R script that will tabulate a statistical description of the model using R's summary() function and provide a screenshot of your results.
+
+
+
+### Part D
+Predict the population size of your state in five years using a linear regression from part A and provide a screenshot of your results.
+
+
+
