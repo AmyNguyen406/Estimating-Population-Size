@@ -1,6 +1,6 @@
 ---
 title: "BOM1 TASK 1: ESTIMATING POPULATION SIZE"
-autho: "Amy Nguyen"
+author: "Amy Nguyen"
 output: html_notebook
 ---
 <center>
@@ -10,6 +10,13 @@ output: html_notebook
 ##November 2020
 </center>
 
+###Packages
+Installing and loading required packages.
+```{r}
+
+install.packages("dplyr")
+library(dplyr)
+```
 
 ###Introduciton
 The United States collects and analyzes demographic data from the U.S. population. The U.S. Census Bureau provides annual estimates of the population size of each U.S. state and region. Many important decisions are made using the estimated population dynamics, including the investments in new infrastructure, such as schools and hospitals; establishing new job training centers; opening or closing schools and senior centers; and adjusting the emergency services to the size and characteristics of the demographics of metropolitan and other areas, states, or the country as a whole. The census data and estimates are publicly available on the U.S. census website. Data analysts use a variety of tools to create models for predictions, including models of population dynamics of a state of a region. For this project, you will use R to create a linear regression model of the population dynamics of your state and predict the size of its population.
@@ -23,29 +30,49 @@ population
 ```
 
 
-### Cleaning the Data
-For this project a linear regression will be created using the total population estimate for each year from 2010 to 2019. Therefore, in order to simplify and imporve the readibility of the data we will be removing any unnecessary columns and/or rows. 
+### Cleaning and Prepping The Data
+For this project a linear regression will be created using the total population estimate for each year from 2010 to 2019. Therefore, in order to simplify and improve the readability of the data we will be removing any unnecessary columns and/or rows. 
+
 
 ```{r}
 df <- subset(population, select = -c(SUMLEV, STATE, COUNTY, PLACE, COUSUB, CONCIT, PRIMGEO_FLAG, FUNCSTAT))
 df[1,1] = "State Total"
 df
+```
+
+* The cleaned data has been put into a new data frame named "df". Specifically, a subset of the original data without the columns SUMLEV, STATE, COUNTY, PLACE, COUSUB, CONCIT, PRIMGEO_FLAG, and FUNCSTAT has been put into a dataframe named "df".
+
+* In addition to these changes the value for the first row under column "NAME" has been changed from "Texas" to "State Total".
+
+Now that the data has each unnecessary column removed, it can be further manipulated. For the purpose of estimating the total population for the state of Texas we only need the information in the first row or the "State Total". Thus, we can pull that data out using the head() function and put it into a new dataframe.
+
+The issue now is that the X values and Y value are in the wrong spot. In order to build a linear regression model where the target is population and the predictor is time the rows and columns need to be reversed. Therefore, the next step is to transpose "total" and correct any other issues such as column names.
+```{r}
+total <- head(df, n=1)
+total <- as.data.frame(t(total))
+total <- tibble::rownames_to_column(total, "Year")
+colnames(total)[2] <- "Population_Estimates"
+head(total)
+```
+
+The final step to prepping the data for the linear regression is removing the first 3 rows, "NAME", "STNAME", and "CENSUS2010POP".
+
+
+### Creating a Linear Regression 
+In order to predict the future population size for the state of Texas a linear regression model named "lmPop" will be created with 
+```{r}
+lmPop <-
+```
+
+### Statisitcal Description of The Model Using summary()
+
+### Predicting Future Population 
+Using the linear regression function ?????? it can be estimated that the population for the state of Texas in 2025 will be ??????.
+```{r}
 
 ```
 
-The cleaned data has been put into a new data frame named "df". Specifically, a subset of the original data without the columns SUMLEV, STATE, COUNTY, PLACE, COUSUB, CONCIT, PRIMGEO_FLAG, and FUNCSTAT has been put into a dataframe named "df".
 
-In addition to these changes the value for the first row under column "NAME" has been changed from "Texas" to "State Total".
-
-
-
-### Part C
-Create an R script that will tabulate a statistical description of the model using R's summary() function and provide a screenshot of your results.
-
-
-
-### Part D
-Predict the population size of your state in five years using a linear regression from part A and provide a screenshot of your results.
 
 
 
