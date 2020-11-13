@@ -1,21 +1,20 @@
 ---
-title: "BOM1 TASK 1: ESTIMATING POPULATION SIZE"
+title: 'BOM1 TASK 1: ESTIMATING POPULATION SIZE'
 author: "Amy Nguyen"
-output: html_notebook
+output:
+  word_document: default
+  html_notebook: default
+  pdf_document: default
 ---
-<center>
-#Estimating Population Size
-##Amy Nguyen
-##C997 - R for Data Analysts
-##November 2020
-</center>
-
 ###Packages
 Installing and loading required packages.
 ```{r}
 
 install.packages("dplyr")
-library(dplyr)
+install.packages("tibble")
+install.packages("tidyverse")
+install.packages("ggpubr")
+
 ```
 
 ###Introduciton
@@ -26,7 +25,7 @@ For this project the data can be found from the U.S. Census Bureau at WWW.census
 
 ```{r}
 population <- read.csv("https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/cities/totals/sub-est2019_48.csv", stringsAsFactors = FALSE)
-population
+head(population)
 ```
 
 
@@ -36,18 +35,17 @@ For this project a linear regression will be created using the total population 
 
 ```{r}
 df <- subset(population, select = -c(SUMLEV, STATE, COUNTY, PLACE, COUSUB, CONCIT, PRIMGEO_FLAG, FUNCSTAT))
-df[1,1] = "State Total"
-df
+head(df)
 ```
 
-* The cleaned data has been put into a new data frame named "df". Specifically, a subset of the original data without the columns SUMLEV, STATE, COUNTY, PLACE, COUSUB, CONCIT, PRIMGEO_FLAG, and FUNCSTAT has been put into a dataframe named "df".
-
-* In addition to these changes the value for the first row under column "NAME" has been changed from "Texas" to "State Total".
+* The cleaned data has been put into a new data frame named "df". Specifically, a subset of the original data without the columns SUMLEV, STATE, COUNTY, PLACE, COUSUB, CONCIT, PRIMGEO_FLAG, and FUNCSTAT has been put into a dataframe named "df"
 
 Now that the data has each unnecessary column removed, it can be further manipulated. For the purpose of estimating the total population for the state of Texas we only need the information in the first row or the "State Total". Thus, we can pull that data out using the head() function and put it into a new dataframe.
 
 The issue now is that the X values and Y value are in the wrong spot. In order to build a linear regression model where the target is population and the predictor is time the rows and columns need to be reversed. Therefore, the next step is to transpose "total" and correct any other issues such as column names.
 ```{r}
+library(dplyr)
+
 total <- head(df, n=1)
 total <- as.data.frame(t(total))
 total <- tibble::rownames_to_column(total, "Year")
@@ -55,20 +53,58 @@ colnames(total)[2] <- "Population_Estimates"
 head(total)
 ```
 
-The final step to prepping the data for the linear regression is removing the first 3 rows, "NAME", "STNAME", and "CENSUS2010POP".
+The next step to prepping the data for the linear regression is removing the first 3 rows, "NAME", "STNAME", "CENSUS2010POP" and "ESTIMATESBASE2010". In addition I'll be renaming the rows for column "Year". 
 
+```{r}
+total <- total[-c(1,2,3,4),]
+total$Year <-c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019)
+
+head(total)
+```
+
+
+The last thing to do is change the data types for the column "Population_Estimates". Using the str() function it can be seen that "Population_Estimates is a character data type.
+
+```{r}
+str(total)
+```
+For the current scenario it is necessary to convert "Population_Estimates" to an integer data type.
+
+```{r}
+total$Population_Estimates <-as.integer(as.character(total$Population_Estimates))
+str(total)
+```
+The data has now been cleaned and manipulated in order to easily create a linear regression with "Year" as the predictor or independent variable and "Population_Estimates" as the dependent variable. 
 
 ### Creating a Linear Regression 
-In order to predict the future population size for the state of Texas a linear regression model named "lmPop" will be created with 
+In order to predict the future population size for the state of Texas a linear regression model named "lmPop" will be created using the lm() function. 
 ```{r}
-lmPop <-
+lmPop <-lm(Population_Estimates~Year, data = total)
+lmPop
+```
+The linear regression equation for the data is  Y = Year(X) + Intercept or Y = 427,446(X) + -833,917,553.
+
+A graph of the data points and the linear regression line can be seen below:
+```{r}
+plot(total$Year, total$Population_Estimates,
+     main = "Population of Texas",
+     xlab = "Year",
+     ylab = "Estimated Total Population",
+     pch = 19,
+     col = "#3399FF")
+
+abline(-833917553, 427446)
 ```
 
 ### Statisitcal Description of The Model Using summary()
 
 ### Predicting Future Population 
-Using the linear regression function ?????? it can be estimated that the population for the state of Texas in 2025 will be ??????.
+Using the linear regression function Y = 427,446(X) + -833,917,553 it can be estimated that the population for the state of Texas in 2025 will be 31,701,097.
+
+NEED TO USE PREDICT FUNCTION(?)
+
 ```{r}
+(427466*2025) + -833917553
 
 ```
 
