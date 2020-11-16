@@ -93,22 +93,35 @@ plot(total$Year, total$Population_Estimates,
      pch = 19,
      col = "#3399FF")
 
-abline(-833917553, 427446)
+abline(lmPop)
 ```
 
 ### Statisitcal Description of The Model Using summary()
 
-### Predicting Future Population 
-Using the linear regression function Y = 427,446(X) + -833,917,553 it can be estimated that the population for the state of Texas in 2025 will be 31,701,097.
-
-NEED TO USE PREDICT FUNCTION(?)
-
 ```{r}
-(427466*2025) + -833917553
-
+summary(lmPop)
 ```
 
 
+### Predicting Future Population 
+In order to predict the future population for the state of Texas a data frame needs to be created with one column for the years to be predicted and another column to hold the future predicted values. 
+
+```{r}
+future_df <- data.frame("Year" = 2020:2030, "Population_Estimates" = 0)
+future_df
+
+```
+
+Now that the data frame holding future year values has been created it is now possible to use the predict() function to predict the population for future years.
+```{r}
+predictions <- predict(lmPop, newdata = future_df)
+
+future_df$Population_Estimates <- predictions
+future_df
+
+```
+
+Looking at the table above we can see that the total population of Texas in 2025 is predicted to be 31,660,278.
 
 
 
