@@ -6,21 +6,20 @@ output:
   html_notebook: default
   pdf_document: default
 ---
-###Packages
-Installing and loading required packages.
-```{r}
+## Packages
+Directly copy and paste the following to ensure that the necessary packages are present to load the code:
 
 install.packages("dplyr")
 install.packages("tibble")
 install.packages("tidyverse")
 install.packages("ggpubr")
 
-```
 
-###Introduciton
+
+## Introduction
 The United States collects and analyzes demographic data from the U.S. population. The U.S. Census Bureau provides annual estimates of the population size of each U.S. state and region. Many important decisions are made using the estimated population dynamics, including the investments in new infrastructure, such as schools and hospitals; establishing new job training centers; opening or closing schools and senior centers; and adjusting the emergency services to the size and characteristics of the demographics of metropolitan and other areas, states, or the country as a whole. The census data and estimates are publicly available on the U.S. census website. Data analysts use a variety of tools to create models for predictions, including models of population dynamics of a state of a region. For this project, you will use R to create a linear regression model of the population dynamics of your state and predict the size of its population.
 
-###Importing the Data
+## Importing the Data
 For this project the data can be found from the U.S. Census Bureau at WWW.census.org. For our purposes I've decided to use the "City and Town Population Totals: 2010-2019" for Texas. This data can be found at https://www.census.gov/data/datasets/time-series/demo/popest/2010s-total-cities-and-towns.html#ds. My first step of this project was to import the data into a dataframe in R.
 
 ```{r}
@@ -29,8 +28,8 @@ head(population)
 ```
 
 
-### Cleaning and Prepping The Data
-For this project a linear regression will be created using the total population estimate for each year from 2010 to 2019. Therefore, in order to simplify and improve the readability of the data we will be removing any unnecessary columns and/or rows. 
+## Cleaning and Prepping The Data
+For this project a linear regression will be created using the total population estimate for each year from 2010 to 2019. Therefore, in order to simplify and improve the readability of the data I will be removing any unnecessary columns and/or rows. 
 
 
 ```{r}
@@ -40,9 +39,7 @@ head(df)
 
 * The cleaned data has been put into a new data frame named "df". Specifically, a subset of the original data without the columns SUMLEV, STATE, COUNTY, PLACE, COUSUB, CONCIT, PRIMGEO_FLAG, and FUNCSTAT has been put into a dataframe named "df"
 
-Now that the data has each unnecessary column removed, it can be further manipulated. For the purpose of estimating the total population for the state of Texas we only need the information in the first row or the "State Total". Thus, we can pull that data out using the head() function and put it into a new dataframe.
-
-The issue now is that the X values and Y value are in the wrong spot. In order to build a linear regression model where the target is population and the predictor is time the rows and columns need to be reversed. Therefore, the next step is to transpose "total" and correct any other issues such as column names.
+Now that the data has each unnecessary column removed, it can be further manipulated. For the purpose of estimating the total population of Texas only the first row or the "State Total" is need. Thus, we can pull that data out using the head() function and put it into a new dataframe.From there the data needs to be transposed to invert the X and Y columns so that a column for all of the years and a separate column for the population estimates can be created. 
 ```{r}
 library(dplyr)
 
@@ -53,7 +50,7 @@ colnames(total)[2] <- "Population_Estimates"
 head(total)
 ```
 
-The next step to prepping the data for the linear regression is removing the first 3 rows, "NAME", "STNAME", "CENSUS2010POP" and "ESTIMATESBASE2010". In addition I'll be renaming the rows for column "Year". 
+The next step to prepping the data for the linear regression is removing the first 4 rows, "NAME", "STNAME", "CENSUS2010POP" and "ESTIMATESBASE2010" as they are unnecessary. In addition each row in the column "Year" will be renamed in order to convert the data type to a numeric type and remove the "POPESTIMATE" text before the year. 
 
 ```{r}
 total <- total[-c(1,2,3,4),]
@@ -63,7 +60,7 @@ head(total)
 ```
 
 
-The last thing to do is change the data types for the column "Population_Estimates". Using the str() function it can be seen that "Population_Estimates is a character data type.
+The last thing to do is change the data type for the column "Population_Estimates". Using the str() function it can be seen that "Population_Estimates is a character data type.
 
 ```{r}
 str(total)
@@ -76,7 +73,7 @@ str(total)
 ```
 The data has now been cleaned and manipulated in order to easily create a linear regression with "Year" as the predictor or independent variable and "Population_Estimates" as the dependent variable. 
 
-### Creating a Linear Regression 
+## Creating a Linear Regression 
 In order to predict the future population size for the state of Texas a linear regression model named "lmPop" will be created using the lm() function. 
 ```{r}
 lmPop <-lm(Population_Estimates~Year, data = total)
@@ -96,14 +93,14 @@ plot(total$Year, total$Population_Estimates,
 abline(lmPop)
 ```
 
-### Statisitcal Description of The Model Using summary()
-
+## Statisitcal Description of The Model Using summary()
+The summary() function can be used to provide statistical information about the linear model. 
 ```{r}
 summary(lmPop)
 ```
+Looking at the summary we can see that the model is a good fit to the data. The multiple R-squared value is very close to 1 and the 3-stars for the variable "Year" indicate a low p-value close to 0 which then indicates a high significance level. 
 
-
-### Predicting Future Population 
+## Predicting Future Population 
 In order to predict the future population for the state of Texas a data frame needs to be created with one column for the years to be predicted and another column to hold the future predicted values. 
 
 ```{r}
